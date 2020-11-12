@@ -1,12 +1,12 @@
-apiVersion: cert-manager.io/v1alpha2
+apiVersion: cert-manager.io/v1alpha3
 kind: Certificate
 metadata:
   name: ${name}
   namespace: ${namespace}
 spec:
   secretName: ${secretname}
-  duration: 10m
-  renewBefore: 7m
+  duration: 2h
+  renewBefore: 10m
   issuerRef:
     name: vault-issuer
   commonName: ${dns_names}.${commonname}

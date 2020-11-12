@@ -11,18 +11,18 @@ resource "random_string" "mongodb-adm-password" {
 resource "kubernetes_secret" "mongodb" {
   metadata {
     name      = "mongodb"
-    namespace = "${var.fruits_namespace}"
+    namespace = var.fruits_namespace
 
     labels = {
       app = "fruits-catalog"
     }
   }
 
-  data {
-    database-name           = "${var.database_name}"
-    database-user           = "${var.database_user}"
-    database-password       = "${random_string.mongodb-password.result}"
-    database-admin-password = "${random_string.mongodb-adm-password.result}"
+  data = {
+    database-name           = var.database_name
+    database-user           = var.database_user
+    database-password       = random_string.mongodb-password.result
+    database-admin-password = random_string.mongodb-adm-password.result
   }
 
   type = "opaque"
@@ -31,7 +31,7 @@ resource "kubernetes_secret" "mongodb" {
 resource "kubernetes_service" "mongodb" {
   metadata {
     name      = "mongodb"
-    namespace = "${var.fruits_namespace}"
+    namespace = var.fruits_namespace
 
     labels = {
       app       = "fruits-catalog"
@@ -60,7 +60,7 @@ resource "kubernetes_service" "mongodb" {
 resource "kubernetes_persistent_volume_claim" "mongodb" {
   metadata {
     name      = "mongodb"
-    namespace = "${var.fruits_namespace}"
+    namespace = var.fruits_namespace
 
     labels = {
       app       = "fruits-catalog"
@@ -82,7 +82,7 @@ resource "kubernetes_persistent_volume_claim" "mongodb" {
 resource "kubernetes_deployment" "mongodb" {
   metadata {
     name      = "mongodb"
-    namespace = "${var.fruits_namespace}"
+    namespace = var.fruits_namespace
 
     labels = {
       app       = "fruits-catalog"
@@ -91,7 +91,7 @@ resource "kubernetes_deployment" "mongodb" {
   }
 
   spec {
-    strategy = {
+    strategy {
       type = "Recreate"
     }
 
@@ -148,48 +148,46 @@ resource "kubernetes_deployment" "mongodb" {
             initial_delay_seconds = 3
           }
 
-          env = [
-            {
-              name = "MONGODB_USER"
+          env {
+            name = "MONGODB_USER"
 
-              value_from {
-                secret_key_ref {
-                  key  = "database-user"
-                  name = "${kubernetes_secret.mongodb.metadata.0.name}"
-                }
+            value_from {
+              secret_key_ref {
+                key  = "database-user"
+                name = kubernetes_secret.mongodb.metadata[0].name
               }
-            },
-            {
-              name = "MONGODB_PASSWORD"
+            }
+          }
+          env {
+            name = "MONGODB_PASSWORD"
 
-              value_from {
-                secret_key_ref {
-                  key  = "database-password"
-                  name = "${kubernetes_secret.mongodb.metadata.0.name}"
-                }
+            value_from {
+              secret_key_ref {
+                key  = "database-password"
+                name = kubernetes_secret.mongodb.metadata[0].name
               }
-            },
-            {
-              name = "MONGODB_ADMIN_PASSWORD"
+            }
+          }
+          env {
+            name = "MONGODB_ADMIN_PASSWORD"
 
-              value_from {
-                secret_key_ref {
-                  key  = "database-admin-password"
-                  name = "${kubernetes_secret.mongodb.metadata.0.name}"
-                }
+            value_from {
+              secret_key_ref {
+                key  = "database-admin-password"
+                name = kubernetes_secret.mongodb.metadata[0].name
               }
-            },
-            {
-              name = "MONGODB_DATABASE"
+            }
+          }
+          env {
+            name = "MONGODB_DATABASE"
 
-              value_from {
-                secret_key_ref {
-                  key  = "database-name"
-                  name = "${kubernetes_secret.mongodb.metadata.0.name}"
-                }
+            value_from {
+              secret_key_ref {
+                key  = "database-name"
+                name = kubernetes_secret.mongodb.metadata[0].name
               }
-            },
-          ]
+            }
+          }
 
           resources {
             limits {
@@ -205,8 +203,9 @@ resource "kubernetes_deployment" "mongodb" {
           image_pull_policy = "IfNotPresent"
 
           security_context {
-            privileged   = false
-            capabilities = {}
+            privileged = false
+            capabilities {
+            }
           }
 
           termination_message_path = "/dev/termination-log"
@@ -215,7 +214,7 @@ resource "kubernetes_deployment" "mongodb" {
         volume {
           name = "mongodb-data"
 
-          persistent_volume_claim = {
+          persistent_volume_claim {
             claim_name = "mongodb"
           }
         }
@@ -227,3 +226,4 @@ resource "kubernetes_deployment" "mongodb" {
     }
   }
 }
+

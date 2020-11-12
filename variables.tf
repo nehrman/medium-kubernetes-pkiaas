@@ -8,6 +8,11 @@ variable "vault_addr" {
   default     = "192.168.94.141:8200"
 }
 
+variable "vault_namespace" {
+  description = "Vault Namespace to use with Vault"
+  default     = "test"
+}
+
 variable "default_namespace" {
   description = "Namespace where to deploy things on K8s"
   default     = "default"
@@ -57,3 +62,4 @@ variable "database_user" {
   description = "MongoDB Database username"
   default     = "userEVY"
 }
+

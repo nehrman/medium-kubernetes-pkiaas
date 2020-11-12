@@ -1,3 +1,4 @@
-output "mongodb_admin_password" {
-    value = "${random_string.mongodb-adm-password.result}"
+output "Root_Certificate_Authority" {
+  value = vault_pki_secret_backend_root_cert.pki.issuing_ca
 }
+
