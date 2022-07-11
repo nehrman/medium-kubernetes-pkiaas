@@ -190,7 +190,7 @@ resource "kubernetes_deployment" "mongodb" {
           }
 
           resources {
-            limits {
+            limits = {
               memory = "512M"
             }
           }
