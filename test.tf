@@ -31,7 +31,7 @@ resource "azurerm_sql_database" "example1" {
   server_name         = azurerm_sql_server.example.name
 
   threat_detection_policy {
-    state = "Enabled"
+    state = "Disabled"
   }
 
   tags = {
